@@ -25,8 +25,7 @@ Uma calculadora precisa e mobile-first para criação de **envelopes e caixas** 
 ### 🔗 Online
 Acesse via GitHub Pages:
 
-https://SEU-USUARIO.github.io/SEU-REPO/
-
+[https://ericcoutinho.github.io/calculadora_envelope](https://ericcoutinho.github.io/calculadora_envelope)
 ---
 
 ### 📱 Instalar como App (iPhone / Android)
