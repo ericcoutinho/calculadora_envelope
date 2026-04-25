@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Calculadora Envelope Punch Board</title>
+<meta name="theme-color" content="#009688">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="mobile-web-app-capable" content="yes">
+
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #ffffff;
+  color: #333;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: linear-gradient(180deg, #c9c9c9, #bdbdbd);
+  padding: 18px 16px;
+  font-size: 21px;
+  font-weight: 800;
+  color: #222;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+main {
+  max-width: 540px;
+  margin: auto;
+  padding: 14px 10px 42px;
+}
+
+h2 {
+  color: #5a9f1b;
+  font-size: 27px;
+  margin: 14px 0 18px;
+  font-weight: 500;
+}
+
+.settings {
+  background: #f3f3f3;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 18px;
+}
+
+.settings-title {
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.option-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.option-row.three { grid-template-columns: 1fr 1fr 1fr; }
+
+.chip {
+  display: block;
+  text-align: center;
+  border: 1px solid #d0d0d0;
+  border-radius: 10px;
+  padding: 10px 6px;
+  background: white;
+  color: #555;
+  font-size: 14px;
+  user-select: none;
+  transition: transform .08s ease, filter .12s ease, background .12s ease, box-shadow .12s ease;
+}
+
+input[type="radio"] { display: none; }
+
+input[type="radio"]:checked + .chip {
+  background: #009688;
+  color: white;
+  border-color: #009688;
+  font-weight: bold;
+}
+
+.chip:active { transform: scale(0.97); }
+
+.square-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f3f3f3;
+  border-radius: 12px;
+  padding: 12px;
+  margin: -6px 0 18px;
+  color: #555;
+  font-size: 16px;
+  user-select: none;
+}
+
+.square-toggle input {
+  width: 22px;
+  height: 22px;
+  accent-color: #009688;
+}
+
+.input-row {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.field-card {
+  background: #fafafa;
+  border: 1px solid #eeeeee;
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.field-card.locked { opacity: 0.58; }
+
+.field-card.locked .value-button,
+.field-card.locked .step-btn,
+.field-card.locked input[type="range"] {
+  pointer-events: none;
+}
+
+.field-top {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.field-label {
+  font-size: 18px;
+  color: #777;
+}
+
+.value-button {
+  min-width: 104px;
+  border: none;
+  background: #ffffff;
+  color: #333;
+  border-bottom: 2px solid #999;
+  text-align: right;
+  padding: 7px 4px 5px;
+  font-size: 22px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 10px 10px 0 0;
+  transition: transform .08s ease, filter .12s ease, background .12s ease, box-shadow .12s ease;
+}
+
+.value-button::after {
+  content: " tocar";
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  color: #999;
+  line-height: 1.1;
+}
+
+.value-button:active { transform: scale(0.97); background: #f1f1f1; }
+
+.unit {
+  font-size: 14px;
+  color: #777;
+  font-weight: 600;
+}
+
+.quick-controls {
+  display: grid;
+  grid-template-columns: 42px 1fr 42px;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.step-btn {
+  height: 38px;
+  border: none;
+  border-radius: 10px;
+  background: #009688;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 3px 8px rgba(0,150,136,0.22);
+  transition: transform .08s ease, filter .12s ease, background .12s ease, box-shadow .12s ease;
+}
+
+.step-btn:active { transform: scale(0.97); }
+
+input[type="range"] {
+  width: 100%;
+  accent-color: #009688;
+}
+
+.result {
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  gap: 12px;
+  align-items: start;
+  margin: 22px 0;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 18px;
+  color: #777;
+}
+
+.value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #5a9f1b;
+  text-align: right;
+  white-space: nowrap;
+  letter-spacing: -0.3px;
+}
+
+.value.red { color: #c63737; }
+
+.small {
+  display: block;
+  font-size: 15px;
+  color: #777;
+  font-weight: 400;
+  margin-top: 7px;
+  white-space: normal;
+}
+
+.hidden { display: none !important; }
+
+.ico {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ico svg {
+  width: 34px;
+  height: 34px;
+  stroke: #111;
+  stroke-width: 2.2;
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.ico .red { stroke: #e54b4b; }
+.ico .gray { stroke: #777; }
+
+.note {
+  margin-top: 24px;
+  font-size: 13px;
+  color: #777;
+  line-height: 1.45;
+  background: #f2f2f2;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.58);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 20;
+  backdrop-filter: blur(3px);
+}
+
+.modal.show { display: flex; }
+
+.modal-sheet {
+  width: 100%;
+  max-width: 540px;
+  background: #fff;
+  border-radius: 22px 22px 0 0;
+  padding: 16px 16px calc(18px + env(safe-area-inset-bottom));
+  box-shadow: 0 -8px 28px rgba(0,0,0,0.22);
+  animation: sheetIn .18s ease-out;
+}
+
+@keyframes sheetIn {
+  from { transform: translateY(18px); opacity: .85; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-title {
+  color: #5a9f1b;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title::after {
+  content: "edição rápida";
+  font-size: 12px;
+  font-weight: 600;
+  color: #777;
+  background: #f1f1f1;
+  padding: 6px 9px;
+  border-radius: 999px;
+}
+
+.modal-display-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  background: #f3f3f3;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+
+.modal-display {
+  flex: 1;
+  text-align: right;
+  font-size: 34px;
+  font-weight: 700;
+  color: #333;
+  min-height: 40px;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.key {
+  border: none;
+  background: #eeeeee;
+  border-radius: 16px;
+  height: 58px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  transition: transform .08s ease, filter .12s ease, background .12s ease, box-shadow .12s ease;
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,0.05);
+}
+
+.key:active { transform: scale(0.97); background: #dddddd; }
+
+.key.action {
+  background: #dfe9e8;
+  color: #00796b;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.modal-actions {
+  display: grid;
+  grid-template-columns: .8fr 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.cancel, .ok {
+  height: 50px;
+  border: none;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 700;
+  transition: transform .08s ease, filter .12s ease, background .12s ease, box-shadow .12s ease;
+}
+
+.cancel { background: #f4b400; color: #fff; }
+.ok { background: #009688; color: #fff; box-shadow: 0 4px 12px rgba(0,150,136,0.28); }
+.cancel:active, .ok:active { transform: scale(0.97); }
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  transform: translateX(-50%) translateY(18px);
+  background: rgba(33,33,33,.92);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+  z-index: 50;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.app-footer {
+  margin-top: 18px;
+  text-align: center;
+  color: #aaa;
+  font-size: 12px;
+}
+
+.warning {
+  color: #b26a00;
+  background: #fff7e6;
+  border: 1px solid #ffe0a3;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+@media (max-width: 380px) {
+  header { font-size: 19px; }
+  h2 { font-size: 24px; }
+  .value-button { min-width: 88px; font-size: 20px; }
+  .option-row.three { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+.clear-btn {
+  background: #e53935 !important;
+  color: #fff !important;
+}
+</style>
+</head>
+
+<body>
+<header>Calculadora Envelope Punch Board</header>
+
+<main>
+  <div class="settings">
+    <div class="settings-title">Configurações</div>
+
+    <div class="option-row">
+      <label><input type="radio" name="unitMode" value="metric" checked><span class="chip">Métrico</span></label>
+      <label><input type="radio" name="unitMode" value="imperial"><span class="chip">Polegadas</span></label>
+    </div>
+
+    <div class="option-row">
+      <label><input type="radio" name="calcType" value="envelope" checked><span class="chip">Envelope</span></label>
+      <label><input type="radio" name="calcType" value="box"><span class="chip">Caixa</span></label>
+    </div>
+
+    <div class="option-row three" id="fitOptions">
+      <label><input type="radio" name="fitMode" value="table" checked><span class="chip">Tabela</span></label>
+      <label><input type="radio" name="fitMode" value="exact"><span class="chip">Exato</span></label>
+      <label><input type="radio" name="fitMode" value="larger"><span class="chip">Com Folga</span></label>
+    </div>
+  </div>
+
+  <h2>Tamanho do Objeto</h2>
+
+  <label class="square-toggle" id="squareWrap">
+    <input type="checkbox" id="isSquare">
+    <span>Objeto quadrado</span>
+  </label>
+
+  <div class="input-row">
+    <span id="icoLength"></span>
+    <div class="field-card" id="lengthCard">
+      <div class="field-top">
+        <div class="field-label">Comprimento</div>
+        <button class="value-button" data-field="length" id="lengthBtn">20.0</button>
+        <span class="unit unitLabel">cm</span>
+      </div>
+      <div class="quick-controls">
+        <button class="step-btn" data-field="length" data-delta="-0.1">−</button>
+        <input type="range" id="lengthRange" min="1" max="40" step="0.1" value="20">
+        <button class="step-btn" data-field="length" data-delta="0.1">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-row">
+    <span id="icoWidth"></span>
+    <div class="field-card" id="widthCard">
+      <div class="field-top">
+        <div class="field-label">Largura</div>
+        <button class="value-button" data-field="width" id="widthBtn">20.0</button>
+        <span class="unit unitLabel">cm</span>
+      </div>
+      <div class="quick-controls">
+        <button class="step-btn" data-field="width" data-delta="-0.1">−</button>
+        <input type="range" id="widthRange" min="1" max="40" step="0.1" value="20">
+        <button class="step-btn" data-field="width" data-delta="0.1">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-row" id="heightRow">
+    <span id="icoHeight"></span>
+    <div class="field-card">
+      <div class="field-top">
+        <div class="field-label">Altura</div>
+        <button class="value-button" data-field="height" id="heightBtn">0.0</button>
+        <span class="unit unitLabel">cm</span>
+      </div>
+      <div class="quick-controls">
+        <button class="step-btn" data-field="height" data-delta="-0.1">−</button>
+        <input type="range" id="heightRange" min="0" max="20" step="0.1" value="0">
+        <button class="step-btn" data-field="height" data-delta="0.1">+</button>
+      </div>
+    </div>
+  </div>
+
+  <h2>Resultado</h2>
+
+  <div class="result">
+    <span id="icoPaper"></span>
+    <div>Tamanho do Papel</div>
+    <div class="value red">
+      <span id="paperMain">30.8 x 30.8</span> <span class="unit" id="paperUnit">cm²</span>
+      <span class="small" id="paperAlt">12 1/8 x 12 1/8 inch²</span>
+    </div>
+  </div>
+
+  <div class="result">
+    <span id="icoScore1"></span>
+    <div id="scoreLabel">Linha de Marcação</div>
+    <div class="value">
+      <span id="scoreMain">15.4</span> <span class="unit" id="scoreUnit">cm</span>
+      <span class="small" id="scoreAlt">6 1/16 inch</span>
+    </div>
+  </div>
+
+  <div class="result hidden" id="diagBox">
+    <span id="icoScore2"></span>
+    <div>Linha Diagonal</div>
+    <div class="value">
+      <span id="diagMain">M</span>
+      <span class="small" id="diagAlt">marcação da caixa</span>
+    </div>
+  </div>
+
+  <div id="matchWarning" class="warning hidden"></div>
+
+  <div class="note" id="noteText">
+    Agora o app usa tabela de referência. Quando não houver medida exata, ele escolhe o tamanho imediatamente acima para garantir folga.
+  </div>
+
+  <div class="app-footer">Tabela de referência • Envelope e Caixa</div>
+</main>
+
+<div class="modal" id="modal">
+  <div class="modal-sheet">
+    <div class="modal-title" id="modalTitle">Digite o valor</div>
+    <div class="modal-display-wrap">
+      <div class="modal-display" id="modalDisplay">0</div>
+      <span class="unit" id="modalUnit">cm</span>
+    </div>
+
+    <div class="keypad">
+      <button class="key">1</button>
+      <button class="key">2</button>
+      <button class="key">3</button>
+      <button class="key">4</button>
+      <button class="key">5</button>
+      <button class="key">6</button>
+      <button class="key">7</button>
+      <button class="key">8</button>
+      <button class="key">9</button>
+      <button class="key action" data-action="dot">,</button>
+      <button class="key">0</button>
+      <button class="key action" data-action="back">⌫</button>
+    </div>
+
+    <div class="modal-actions">
+      <button class="cancel" id="clearBtn">Limpar</button>
+      <button class="cancel" id="cancelBtn">Cancelar</button>
+      <button class="ok" id="okBtn">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Atualizado</div>
+
+<script>
+const CM_PER_IN = 2.54;
+
+const state = {
+  length: 20,
+  width: 20,
+  height: 0
+};
+
+let currentUnit = "metric";
+let editingField = null;
+let tempValue = "";
+let toastTimer = null;
+
+/*
+  Tabela de Envelope transcrita da imagem enviada.
+  Medidas em cm. A linha de marcação original está em polegadas.
+*/
+const envelopeTable = [
+  [5.1,8.9,12.7,2],
+  [6.4,7.6,12.7,2+3/8],
+  [6.4,8.9,14.0,2+3/8],
+  [7.6,7.6,13.3,2+5/8],
+  [7.6,8.9,14.6,2+5/8],
+  [7.6,10.2,15.2,2+5/8],
+  [7.6,11.4,16.5,2+3/4],
+  [7.6,12.7,17.2,2+3/4],
+  [7.6,14.0,18.1,2+3/4],
+  [7.6,15.2,19.1,2+5/8],
+  [7.6,16.5,20.0,2+3/4],
+  [7.6,17.8,21.0,2+3/4],
+  [7.6,19.1,21.6,2+5/8],
+  [7.6,20.3,22.5,2+5/8],
+  [7.6,21.6,23.5,2+5/8],
+  [8.9,8.9,15.2,3],
+  [8.9,10.2,16.5,3+1/8],
+  [8.9,11.4,17.2,3],
+  [8.9,12.7,18.4,3+1/8],
+  [8.9,14.0,19.1,3],
+  [8.9,15.24,20.3,3+1/8],
+  [8.9,16.5,21.0,3],
+  [8.9,17.8,22.0,3],
+  [8.9,19.1,22.9,3+1/8],
+  [8.9,20.3,23.5,2+7/8],
+  [8.9,21.6,24.8,3+1/8],
+  [10.2,10.2,17.5,3+1/2],
+  [10.2,11.4,18.4,3+1/2],
+  [10.2,12.7,19.1,3+3/8],
+  [10.2,14.0,20.0,3+3/8],
+  [10.2,15.2,21.0,3+3/8],
+  [10.2,16.5,22.0,3+3/8],
+  [10.2,17.8,22.2,3+3/8],
+  [10.2,19.1,23.5,3+3/8],
+  [10.2,20.3,24.5,3+3/8],
+  [10.2,21.6,25.1,3+3/8],
+  [11.4,11.4,19.1,3+3/4],
+  [11.4,12.7,19.7,3+3/4],
+  [11.4,14.0,20.6,3+3/4],
+  [11.4,15.2,21.6,3+3/4],
+  [11.4,16.5,22.5,3+3/4],
+  [11.4,17.8,23.5,3+3/4],
+  [11.4,19.1,24.8,3+3/4],
+  [11.4,20.3,25.4,3+3/4],
+  [11.4,21.6,26.7,3+3/4],
+  [12.7,12.7,20.6,4+1/8],
+  [12.7,14.0,21.6,4+1/8],
+  [12.7,15.2,22.9,4+1/4],
+  [12.7,16.5,23.5,4],
+  [12.7,17.8,24.1,4],
+  [12.7,19.1,25.4,4+1/8],
+  [12.7,20.3,26.1,4],
+  [12.7,21.6,27.3,4+1/8],
+  [14.0,14.0,22.9,4+1/2],
+  [14.0,15.2,23.5,4+3/8],
+  [14.0,16.5,24.8,4+1/2],
+  [14.0,17.8,25.7,4+1/2],
+  [14.0,19.1,26.7,4+1/2],
+  [14.0,20.3,26.7,4+1/2],
+  [14.0,21.6,27.9,4+1/2],
+  [15.2,15.2,24.1,4+3/4],
+  [15.2,16.5,25.4,4+3/4],
+  [15.2,17.8,26.0,4+3/4],
+  [15.2,19.1,27.3,4+7/8],
+  [15.2,20.3,27.9,4+7/8],
+  [15.2,21.6,29.2,4+7/8]
+].map(r => ({ w: Math.min(r[0], r[1]), l: Math.max(r[0], r[1]), paper: r[2], scoreIn: r[3] }));
+
+/*
+  Tabela de Caixa transcrita da imagem.
+  Tamanho da caixa em cm, papel em cm, linhas S/M/L/XL.
+*/
+const boxTable = [
+  [4.4,4.4,4.4,15.2,"S","S"],
+  [4.4,4.4,6.4,17.8,"S","M"],
+  [4.4,4.4,8.3,20.3,"S","L"],
+  [4.4,4.4,10.2,22.9,"S","XL"],
+  [6.4,6.4,4.4,17.8,"M","S"],
+  [6.4,6.4,6.4,20.3,"M","M"],
+  [6.4,6.4,8.3,22.9,"M","L"],
+  [6.4,6.4,10.2,25.4,"M","XL"],
+  [8.3,8.3,4.4,20.3,"L","S"],
+  [8.3,8.3,6.4,22.9,"L","M"],
+  [8.3,8.3,8.3,25.4,"L","L"],
+  [8.3,8.3,10.2,27.9,"L","XL"],
+  [10.2,10.2,4.4,22.9,"XL","S"],
+  [10.2,10.2,6.4,25.4,"XL","M"],
+  [10.2,10.2,8.3,27.9,"XL","L"],
+  [10.2,10.2,10.2,30.5,"XL","XL"]
+].map(r => ({ w: r[0], l: r[1], h: r[2], paper: r[3], initial: r[4], diagonal: r[5] }));
+
+function haptic(ms = 8) {
+  if (navigator.vibrate) navigator.vibrate(ms);
+}
+
+function showToast(text) {
+  const el = document.getElementById("toast");
+  if (!el) return;
+  el.textContent = text;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 1100);
+}
+
+function cubeIcon() {
+  return `<span class="ico"><svg viewBox="0 0 40 40"><path d="M20 4 L33 11 L33 27 L20 36 L7 27 L7 11 Z"></path><path d="M7 11 L20 18 L33 11"></path><path d="M20 18 L20 36"></path><path class="red" d="M6 30 L6 34 L16 37"></path></svg></span>`;
+}
+function heightIcon() {
+  return `<span class="ico"><svg viewBox="0 0 40 40"><path d="M20 6 L32 12 L32 27 L20 35 L8 27 L8 12 Z"></path><path d="M8 12 L20 18 L32 12"></path><path d="M20 18 L20 35"></path><path class="red" d="M4 12 L4 30"></path><path class="red" d="M2 12 L6 12"></path><path class="red" d="M2 30 L6 30"></path></svg></span>`;
+}
+function paperIcon() {
+  return `<span class="ico"><svg viewBox="0 0 40 40"><path d="M7 7 H33 V33 H7 Z"></path><path class="red" d="M7 30 H33"></path><path class="red" d="M10 7 V33"></path><path class="gray" d="M7 7 L4 4 M33 7 L36 4 M33 33 L36 36 M7 33 L4 36"></path></svg></span>`;
+}
+function scoreIcon(n) {
+  return `<span class="ico"><svg viewBox="0 0 40 40"><path d="M7 7 H33 V33 H7 Z"></path><path class="red" d="M9 9 L31 31"></path><text x="20" y="24" text-anchor="middle" font-size="13" fill="#e54b4b" stroke="none" font-family="Arial">${n}</text></svg></span>`;
+}
+
+function getRadio(name) {
+  return document.querySelector(`input[name="${name}"]:checked`).value;
+}
+
+function round1(x) {
+  return Math.round(x * 10) / 10;
+}
+
+function roundToSixteenth(x) {
+  return Math.round(x * 16) / 16;
+}
+
+function formatFractionInch(value) {
+  value = roundToSixteenth(value);
+  const whole = Math.floor(value);
+  const frac = value - whole;
+  let sixteenths = Math.round(frac * 16);
+  if (sixteenths === 0) return `${whole}`;
+  if (sixteenths === 16) return `${whole + 1}`;
+  function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+  const g = gcd(sixteenths, 16);
+  const num = sixteenths / g;
+  const den = 16 / g;
+  return whole > 0 ? `${whole} ${num}/${den}` : `${num}/${den}`;
+}
+
+function cmToDisplayMain(cm) {
+  return getRadio("unitMode") === "metric" ? round1(cm).toFixed(1) : formatFractionInch(cm / CM_PER_IN);
+}
+
+function cmToAlt(cm, squared) {
+  if (getRadio("unitMode") === "metric") return `${formatFractionInch(cm / CM_PER_IN)}${squared ? " inch²" : " inch"}`;
+  return `${round1(cm).toFixed(1)}${squared ? " cm²" : " cm"}`;
+}
+
+function inputToCm(v) {
+  return getRadio("unitMode") === "metric" ? v : v * CM_PER_IN;
+}
+
+function cmToInput(v) {
+  return getRadio("unitMode") === "metric" ? v : v / CM_PER_IN;
+}
+
+function findEnvelope(wCm, lCm) {
+  const w = Math.min(wCm, lCm);
+  const l = Math.max(wCm, lCm);
+  const candidates = envelopeTable
+    .filter(r => r.w >= w - 0.001 && r.l >= l - 0.001)
+    .sort((a,b) => (a.paper - b.paper) || (a.w + a.l - b.w - b.l));
+  return candidates[0] || envelopeTable[envelopeTable.length - 1];
+}
+
+function findBox(wCm, lCm, hCm) {
+  const side = Math.max(wCm, lCm);
+  const candidates = boxTable
+    .filter(r => r.w >= side - 0.001 && r.l >= side - 0.001 && r.h >= hCm - 0.001)
+    .sort((a,b) => (a.paper - b.paper) || (a.w + a.h - b.w - b.h));
+  return candidates[0] || boxTable[boxTable.length - 1];
+}
+
+function setupRanges() {
+  const metric = getRadio("unitMode") === "metric";
+  const unitText = metric ? "cm" : "in";
+
+  document.querySelectorAll(".unitLabel").forEach(el => el.textContent = unitText);
+  document.getElementById("modalUnit").textContent = unitText;
+
+  const maxMain = metric ? 40 : 16;
+  const maxHeight = metric ? 20 : 8;
+  const step = metric ? 0.1 : 0.0625;
+
+  ["length", "width"].forEach(field => {
+    const el = document.getElementById(field + "Range");
+    el.min = step;
+    el.max = maxMain;
+    el.step = step;
+  });
+
+  const height = document.getElementById("heightRange");
+  height.min = 0;
+  height.max = maxHeight;
+  height.step = step;
+}
+
+function convertFields(from, to) {
+  if (from === to) return;
+  Object.keys(state).forEach(k => {
+    state[k] = from === "metric" && to === "imperial" ? state[k] / CM_PER_IN : state[k] * CM_PER_IN;
+    state[k] = round1(state[k]);
+  });
+}
+
+function updateInputs() {
+  const square = document.getElementById("isSquare").checked;
+  if (square) state.width = state.length;
+
+  Object.keys(state).forEach(k => {
+    document.getElementById(k + "Btn").textContent = state[k].toFixed(1);
+    document.getElementById(k + "Range").value = state[k];
+  });
+
+  document.getElementById("widthCard").classList.toggle("locked", square);
+}
+
+function calculate() {
+  const calcType = getRadio("calcType");
+  const unit = getRadio("unitMode") === "metric" ? "cm" : "in";
+  const wCm = inputToCm(state.width);
+  const lCm = inputToCm(state.length);
+  const hCm = inputToCm(state.height);
+
+  document.getElementById("heightRow").classList.toggle("hidden", calcType !== "box");
+  document.getElementById("diagBox").classList.toggle("hidden", calcType !== "box");
+  document.getElementById("scoreLabel").textContent = calcType === "box" ? "Linha Inicial" : "Linha de Marcação";
+  document.getElementById("paperUnit").textContent = `${unit}²`;
+  document.getElementById("scoreUnit").textContent = calcType === "box" ? "" : unit;
+
+  let warning = "";
+  let paperCm, scoreMain, scoreAlt, diagMain = "", diagAlt = "";
+
+  if (calcType === "envelope") {
+    const r = findEnvelope(wCm, lCm);
+    paperCm = r.paper;
+    const scoreCm = r.scoreIn * CM_PER_IN;
+    scoreMain = getRadio("unitMode") === "metric" ? round1(scoreCm).toFixed(1) : formatFractionInch(r.scoreIn);
+    scoreAlt = getRadio("unitMode") === "metric" ? `${formatFractionInch(r.scoreIn)} inch` : `${round1(scoreCm).toFixed(1)} cm`;
+
+    if (Math.abs(r.w - Math.min(wCm,lCm)) > 0.05 || Math.abs(r.l - Math.max(wCm,lCm)) > 0.05) {
+      warning = `Medida não encontrada exatamente na tabela. Usando referência acima: ${r.w.toFixed(1)} x ${r.l.toFixed(1)} cm.`;
+    }
+  } else {
+    const r = findBox(wCm, lCm, hCm);
+    paperCm = r.paper;
+    scoreMain = r.initial;
+    scoreAlt = "linha inicial";
+    diagMain = r.diagonal;
+    diagAlt = "linha diagonal";
+
+    if (Math.abs(r.w - Math.max(wCm,lCm)) > 0.05 || Math.abs(r.h - hCm) > 0.05) {
+      warning = `Medida não encontrada exatamente na tabela. Usando referência acima: ${r.w.toFixed(1)} x ${r.w.toFixed(1)} x ${r.h.toFixed(1)} cm.`;
+    }
+  }
+
+  const paperDisplay = cmToDisplayMain(paperCm);
+  document.getElementById("paperMain").textContent = `${paperDisplay} x ${paperDisplay}`;
+  document.getElementById("paperAlt").textContent = `${cmToAlt(paperCm, true).replace(" inch²", "")} x ${cmToAlt(paperCm, true)}`;
+
+  document.getElementById("scoreMain").textContent = scoreMain;
+  document.getElementById("scoreAlt").textContent = scoreAlt;
+
+  document.getElementById("diagMain").textContent = diagMain;
+  document.getElementById("diagAlt").textContent = diagAlt;
+
+  const warnEl = document.getElementById("matchWarning");
+  warnEl.textContent = warning;
+  warnEl.classList.toggle("hidden", !warning);
+}
+
+function refresh() {
+  updateInputs();
+  calculate();
+}
+
+function fieldName(field) {
+  return { length: "Comprimento", width: "Largura", height: "Altura" }[field];
+}
+
+function openModal(field) {
+  if (field === "width" && document.getElementById("isSquare").checked) return;
+  editingField = field;
+  tempValue = String(Math.max(0, state[field]).toFixed(1)).replace(".", ",");
+  document.getElementById("modalTitle").textContent = fieldName(field);
+  document.getElementById("modalDisplay").textContent = tempValue;
+  document.getElementById("modalUnit").textContent = getRadio("unitMode") === "metric" ? "cm" : "in";
+  document.getElementById("modal").classList.add("show");
+  haptic(6);
+}
+
+function closeModal() {
+  document.getElementById("modal").classList.remove("show");
+}
+
+function updateModalDisplay() {
+  document.getElementById("modalDisplay").textContent = tempValue || "0";
+}
+
+function applyModal() {
+  const normalized = tempValue.replace(",", ".");
+  let value = parseFloat(normalized);
+  if (!isNaN(value) && editingField) {
+    value = Math.max(0, value);
+    state[editingField] = round1(value);
+    if (editingField === "length" && document.getElementById("isSquare").checked) state.width = state.length;
+    refresh();
+    showToast("Valor atualizado");
+    haptic(12);
+  }
+  closeModal();
+}
+
+document.querySelectorAll(".value-button").forEach(btn => {
+  btn.addEventListener("click", () => openModal(btn.dataset.field));
+});
+
+document.querySelectorAll(".step-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const field = btn.dataset.field;
+    const delta = parseFloat(btn.dataset.delta);
+    const min = field === "height" ? 0 : (getRadio("unitMode") === "metric" ? 0.1 : 0.0625);
+    state[field] = round1(Math.max(min, state[field] + delta));
+    if (field === "length" && document.getElementById("isSquare").checked) state.width = state.length;
+    haptic(8);
+    refresh();
+  });
+});
+
+["length", "width", "height"].forEach(field => {
+  document.getElementById(field + "Range").addEventListener("input", e => {
+    state[field] = round1(parseFloat(e.target.value) || 0);
+    if (field === "length" && document.getElementById("isSquare").checked) state.width = state.length;
+    refresh();
+  });
+});
+
+document.getElementById("isSquare").addEventListener("change", () => {
+  if (document.getElementById("isSquare").checked) {
+    state.width = state.length;
+    showToast("Largura travada");
+  } else {
+    showToast("Largura liberada");
+  }
+  refresh();
+});
+
+document.querySelectorAll("input[type=radio]").forEach(r => {
+  r.addEventListener("change", () => {
+    const newUnit = getRadio("unitMode");
+    if (newUnit !== currentUnit) convertFields(currentUnit, newUnit);
+    currentUnit = newUnit;
+    setupRanges();
+    refresh();
+  });
+});
+
+document.querySelectorAll(".key").forEach(key => {
+  key.addEventListener("click", () => {
+    haptic(5);
+    const action = key.dataset.action;
+    const text = key.textContent.trim();
+
+    if (!action) {
+      if (tempValue === "0") tempValue = "";
+      tempValue += text;
+    } else if (action === "dot") {
+      if (!tempValue.includes(",") && !tempValue.includes(".")) tempValue += ",";
+    } else if (action === "back") {
+      tempValue = tempValue.slice(0, -1);
+    }
+
+    updateModalDisplay();
+  });
+});
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+  tempValue = "";
+  updateModalDisplay();
+  haptic(8);
+});
+document.getElementById("cancelBtn").addEventListener("click", closeModal);
+document.getElementById("okBtn").addEventListener("click", applyModal);
+document.getElementById("modal").addEventListener("click", e => {
+  if (e.target.id === "modal") closeModal();
+});
+
+document.addEventListener("keydown", e => {
+  if (!document.getElementById("modal").classList.contains("show")) return;
+  if (/^[0-9]$/.test(e.key)) {
+    if (tempValue === "0") tempValue = "";
+    tempValue += e.key;
+    updateModalDisplay();
+  }
+  if (e.key === "," || e.key === ".") {
+    if (!tempValue.includes(",") && !tempValue.includes(".")) tempValue += ",";
+    updateModalDisplay();
+  }
+  if (e.key === "Backspace") {
+    tempValue = tempValue.slice(0, -1);
+    updateModalDisplay();
+  }
+  if (e.key === "Enter") applyModal();
+  if (e.key === "Escape") closeModal();
+});
+
+document.getElementById("icoLength").innerHTML = cubeIcon();
+document.getElementById("icoWidth").innerHTML = cubeIcon();
+document.getElementById("icoHeight").innerHTML = heightIcon();
+document.getElementById("icoPaper").innerHTML = paperIcon();
+document.getElementById("icoScore1").innerHTML = scoreIcon(1);
+document.getElementById("icoScore2").innerHTML = scoreIcon(2);
+
+setupRanges();
+refresh();
+</script>
+</body>
+</html>
