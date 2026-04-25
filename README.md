@@ -4,6 +4,9 @@ Uma calculadora precisa e mobile-first para criação de **envelopes e caixas** 
 
 👉 Desenvolvido com base em **tabelas reais de referência**, garantindo resultados confiáveis.
 
+Compatível com Base Mimo Making para Criação de Caixas e Envelopes e Envelope Punch Board We R Memory Keepers.
+Os cálculos seguem como referência as marcações e proporções utilizadas nessas bases, garantindo resultados práticos e alinhados ao uso real no artesanato.
+
 ---
 
 ## ✨ Funcionalidades
@@ -16,7 +19,7 @@ Uma calculadora precisa e mobile-first para criação de **envelopes e caixas** 
 - ⚡ Funciona **offline (PWA)**
 - 🧠 Ajuste automático (usa próximo valor válido da tabela)
 - 🔒 Modo **objeto quadrado**
-- 🎯 UX estilo app (teclado, vibração, animações)
+- 🎯 UX estilo app
 
 ---
 
@@ -78,25 +81,10 @@ Acesse via GitHub Pages:
 
 ---
 
-## 🔄 Atualizações (importante)
-
-Se você modificar o app:
-
-👉 altere a versão do cache em `sw.js`
-
-```js
-const CACHE_NAME = "calculadora-vX";
-```
-
-Senão o app instalado não atualiza.
-
----
-
 ## 🎨 Design
 
 - Tema: verde + amarelo (girafa 🦒)  
-- UX inspirado em apps mobile  
-- Feedback com animações + vibração  
+- UX inspirado em apps mobile
 
 ---
 
